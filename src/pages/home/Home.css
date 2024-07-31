@@ -1,0 +1,74 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
+  }
+  
+  .App {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  header, section {
+    width: 100%;
+    padding: 0 16px;
+  }
+  
+  header nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  section {
+    display: flex;
+    overflow-x: auto;
+    padding: 16px 0;
+  }
+  
+  section .container {
+    display: flex;
+    padding: 16px 0;
+  }
+  
+  section .container > div {
+    flex: none;
+  }
+  
+  main .container {
+    padding: 0 16px;
+  }
+  
+  /* Add custom scrollbar styles */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  
+  .scrollbar-thumb-gray-300 {
+    scrollbar-color: #D1D5DB #F3F4F6;
+  }
+  
+  .scrollbar-track-gray-100 {
+    scrollbar-color: #F3F4F6;
+  }
+  
+  /* For Chrome, Edge, and Safari */
+  section::-webkit-scrollbar {
+    height: 8px;
+  }
+  
+  section::-webkit-scrollbar-track {
+    background: #F3F4F6;
+  }
+  
+  section::-webkit-scrollbar-thumb {
+    background-color: #D1D5DB;
+    border-radius: 10px;
+    border: 3px solid #F3F4F6;
+  }
+  
