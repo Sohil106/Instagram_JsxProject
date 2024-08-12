@@ -39,19 +39,22 @@ import PostCarousel from "./PostCarousel";
 import { useDispatch } from "react-redux";
 import { addOrRemovePostLike, getPost } from "../../redux/slices/ProfileSlice";
 import { decodeToken } from "../../utils/AuthService";
+import EditDeletePost from "../../components/profile/EditDeletePost";
 
-const Post = ({ data, handlePostOpen }) => {
+const Post = ({ data, handlePostOpen, deletehandler, closePostHandler }) => {
   // const [count,PostCount] = useState(Post);
   const user = decodeToken();
-  const [isLiked, setIsLiked] = React.useState(
+  const [isLiked, setIsLiked] = useState(
     !!data.postLikes.find(
       (item) => item.userId.toString() === user.UserId.toString()
     )
   );
   const dispatch = useDispatch();
-  const [likesCount, setLikesCount] = React.useState(
+  const [likesCount, setLikesCount] = useState(
     Array.isArray(data.postLikes) ? data.postLikes.length : 0
   );
+  const [popUpOpen, setPopUpOpen] = useState(false);
+  const [pId, setPId] = useState();
 
   // useEffect(() => {
   //   console.log(data.postLikes)
@@ -72,6 +75,14 @@ const Post = ({ data, handlePostOpen }) => {
       //   setLikesCount(Array.isArray(res2.payload.data.postLikes) ? res2.payload.data.postLikes.length : 0)
       // }
     }
+  };
+  const handlePopUP = (postId) => {
+    setPId(postId);
+    setPopUpOpen(true);
+  };
+  const closePopUp = () => {
+    closePostHandler();
+    setPopUpOpen(false);
   };
 
   return (
@@ -94,9 +105,13 @@ const Post = ({ data, handlePostOpen }) => {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item className="flex items-center text-2xl">
-            <BsThreeDots />
-          </Grid>
+          {user.UserId.toString() === data.userId.toString() && (
+            <Grid item className="flex items-center text-2xl">
+              <IconButton onClick={() => handlePopUP(data.postId)}>
+                <BsThreeDots />
+              </IconButton>
+            </Grid>
+          )}
         </Grid>
         <PostCarousel PostUrls={data.postUrls} />
       </CardContent>
@@ -123,6 +138,14 @@ const Post = ({ data, handlePostOpen }) => {
         <IconButton>
           <MdOutlineTurnedInNot className="text-3xl" />
         </IconButton>
+        {popUpOpen && pId && (
+          <EditDeletePost
+            closePopUp={closePopUp}
+            popUpOpen={popUpOpen}
+            postId={pId}
+            deletehandler={deletehandler}
+          />
+        )}
       </Box>
       <div className="px-4 font-semibold"> {likesCount} likes</div>
       <div className="px-4 font-semibold mt-2 mb-2">

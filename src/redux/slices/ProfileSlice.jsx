@@ -7,10 +7,14 @@ const initialState = {
   ErrorMessage: "",
   SuccessMessage: "",
   isError: false,
+  error: "",
+  loading: false,
   isloading: false,
   success: false,
   user: {},
   profilePicture: "",
+  profilePictureBase64: "",
+  profilePictureFiletype: "",
   otherProfilePicture: "",
   UserList: {},
   followerList: [],
@@ -18,6 +22,7 @@ const initialState = {
   mutualList: [],
   postList: [],
   mutualcount: 0,
+  UnseenNotificationCount: 0,
 };
 
 export const getProfilePicture = createAsyncThunk(
@@ -51,6 +56,31 @@ export const getProfilePicture = createAsyncThunk(
 
           reader.readAsDataURL(blob);
         });
+      } else {
+        return thunkAPI.rejectWithValue(await response.data);
+      }
+    } catch (error) {
+      if (error.response) {
+        return thunkAPI.rejectWithValue(error.response.data);
+      } else {
+        return thunkAPI.rejectWithValue({ message: error.message });
+      }
+    }
+  }
+);
+export const getProfilePictureBase64 = createAsyncThunk(
+  "/File/GetProfilePictureBase64",
+  async (data, thunkAPI) => {
+    try {
+      const response = await axiosInstance.get(
+        `/File/GetProfilePictureBase64/${data}`
+        // {
+        //   responseType: "base64",
+        // }
+      );
+      // console.log(response.data);
+      if (response.data.isSuccess) {
+        return response.data;
       } else {
         return thunkAPI.rejectWithValue(await response.data);
       }
@@ -224,7 +254,7 @@ export const getFollowerList = createAsyncThunk(
       let response;
       if (data.SearchValue) {
         response = await axiosInstance.get(
-          `/User/${data.userId}/GetFollowerList?SearchValue=${data.SearchValue}`
+          `/User/${data.userId}/GetFollowerList?SearchValue=${data.SearchValue}&PageNumber=${data.PageNumber}&PageSize=${data.PageSize}`
         );
       } else {
         response = await axiosInstance.get(
@@ -232,7 +262,6 @@ export const getFollowerList = createAsyncThunk(
         );
       }
       if (response.data.isSuccess) {
-        console.log(response);
         return response.data;
       } else {
         return thunkAPI.rejectWithValue(await response.data);
@@ -253,7 +282,7 @@ export const getFollowingList = createAsyncThunk(
     try {
       if (data.SearchValue) {
         response = await axiosInstance.get(
-          `/User/${data.userId}/GetFollowingList?SearchValue=${data.SearchValue}`
+          `/User/${data.userId}/GetFollowingList?SearchValue=${data.SearchValue}&PageNumber=${data.PageNumber}&PageSize=${data.PageSize}`
         );
       } else {
         response = await axiosInstance.get(
@@ -286,7 +315,7 @@ export const getMutualList = createAsyncThunk(
         );
       } else {
         response = await axiosInstance.get(
-          `/User/${data.userId}/GetMutualList?PageNumber=${data.PageNumber}&PageSize=${data.PageSize}`
+          `/User/${data.userId}/GetMutualList?PageNumber=${data.PageNumber}&PageSize=${data.PageSize}&PageNumber=${data.PageNumber}&PageSize=${data.PageSize}`
         );
       }
       if (response.data.isSuccess) {
@@ -742,6 +771,112 @@ export const getNotificationList = createAsyncThunk(
   }
 );
 
+export const getUnseenNotificationList = createAsyncThunk(
+  "/Notification/GetUnSeenNotificationCount",
+  async (data, thunkAPI) => {
+    try {
+      const response = await axiosInstance.get(
+        `/Notification/GetUnSeenNotificationCount`
+      );
+      if (response.data.isSuccess) {
+        return response.data;
+      } else {
+        return thunkAPI.rejectWithValue(await response.data);
+      }
+    } catch (error) {
+      if (error.response) {
+        return thunkAPI.rejectWithValue(error.response.data);
+      } else {
+        return thunkAPI.rejectWithValue({ message: error.message });
+      }
+    }
+  }
+);
+
+export const deletePost = createAsyncThunk(
+  "/Post/DeletePost",
+  async (postId, thunkAPI) => {
+    try {
+      const response = await axiosInstance.delete(
+        `/Post/DeletePost?postId=${postId}`
+      );
+      if (response.data.isSuccess) {
+        return response.data;
+      } else {
+        return thunkAPI.rejectWithValue(await response.data);
+      }
+    } catch (error) {
+      if (error.response) {
+        return thunkAPI.rejectWithValue(error.response.data);
+      } else {
+        return thunkAPI.rejectWithValue({ message: error.message });
+      }
+    }
+  }
+);
+
+export const getChatList = createAsyncThunk(
+  "/Chat/GetChatList",
+  async (chatId, thunkAPI) => {
+    try {
+      const response = await axiosInstance.get(`/Chat/GetChatList`);
+      if (response.data.isSuccess) {
+        return response.data;
+      } else {
+        return thunkAPI.rejectWithValue(await response.data);
+      }
+    } catch (error) {
+      if (error.response) {
+        return thunkAPI.rejectWithValue(error.response.data);
+      } else {
+        return thunkAPI.rejectWithValue({ message: error.message });
+      }
+    }
+  }
+);
+
+export const createChat = createAsyncThunk(
+  "/Chat/CreateChat",
+  async (data, thunkAPI) => {
+    try {
+      const response = await axiosInstance.post(`/Chat/CreateChat`, data);
+      if (response.data.isSuccess) {
+        return response.data;
+      } else {
+        return thunkAPI.rejectWithValue(await response.data);
+      }
+    } catch (error) {
+      if (error.response) {
+        return thunkAPI.rejectWithValue(error.response.data);
+      } else {
+        return thunkAPI.rejectWithValue({ message: error.message });
+      }
+    }
+  }
+);
+
+export const getMessageList = createAsyncThunk(
+  "/Chat/GetMessageList",
+  async (chatId, thunkAPI) => {
+    try {
+      const response = await axiosInstance.get(
+        `/Chat/GetMessageList?chatId=${chatId}&Pagesize=1000`
+      );
+      if (response.data.isSuccess) {
+        return response.data;
+      } else {
+        return thunkAPI.rejectWithValue(await response.data);
+      }
+    } catch (error) {
+      if (error.response) {
+        return thunkAPI.rejectWithValue(error.response.data);
+      } else {
+        return thunkAPI.rejectWithValue({ message: error.message });
+      }
+    }
+  }
+);
+
 const profileSlice = createSlice({
   name: "profile",
   initialState,
@@ -755,6 +890,15 @@ const profileSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(getProfilePictureBase64.fulfilled, (state, action) => {
+        state.success = true;
+        state.profilePictureBase64 = action.payload.data.base64;
+        state.profilePictureFiletype = action.payload.data.fileType;
+      })
+      .addCase(getProfilePictureBase64.rejected, (state, action) => {
+        state.success = false;
+        state.isError = true;
+      })
       .addCase(getProfilePicture.fulfilled, (state, action) => {
         state.success = true;
         state.profilePicture = action.payload;
@@ -788,6 +932,7 @@ const profileSlice = createSlice({
         state.isError = true;
       })
       .addCase(getotherUserData.fulfilled, (state, action) => {
+        state.isSuccess = true;
         state.success = true;
       })
       .addCase(getotherUserData.rejected, (state, action) => {
@@ -795,6 +940,7 @@ const profileSlice = createSlice({
         state.isError = true;
       })
       .addCase(updateUserData.fulfilled, (state, action) => {
+        state.isSuccess = true;
         state.success = true;
       })
       .addCase(updateUserData.rejected, (state, action) => {
@@ -803,6 +949,7 @@ const profileSlice = createSlice({
         state.ErrorMessage = action.payload.message;
       })
       .addCase(getUserList.fulfilled, (state, action) => {
+        state.isSuccess = true;
         state.success = true;
         state.UserList = action.payload.data.data;
       })
@@ -810,6 +957,7 @@ const profileSlice = createSlice({
         state.success = false;
       });
     builder.addCase(getFollowerList.fulfilled, (state, action) => {
+      state.isSuccess = true;
       state.loading = false;
       state.followerList = action.payload.data.data;
     });
@@ -818,6 +966,7 @@ const profileSlice = createSlice({
       state.error = action.payload.error;
     });
     builder.addCase(getFollowingList.fulfilled, (state, action) => {
+      state.success = true;
       state.loading = false;
       state.followingList = action.payload.data.data;
     });
@@ -826,6 +975,7 @@ const profileSlice = createSlice({
       state.error = action.payload.error;
     });
     builder.addCase(getMutualList.fulfilled, (state, action) => {
+      state.success = true;
       state.loading = false;
       state.mutualList = action.payload.data.data;
       state.mutualcount = action.payload.data.totalRecord;
@@ -835,10 +985,19 @@ const profileSlice = createSlice({
       state.error = action.payload.error;
     });
     builder.addCase(getPostList.fulfilled, (state, action) => {
+      state.success = true;
       state.loading = false;
       state.postList = action.payload.data.data;
     });
     builder.addCase(getPostList.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload.error;
+    });
+    builder.addCase(getUnseenNotificationList.fulfilled, (state, action) => {
+      state.success = true;
+      state.UnseenNotificationCount = action.payload.data;
+    });
+    builder.addCase(getUnseenNotificationList.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload.error;
     });

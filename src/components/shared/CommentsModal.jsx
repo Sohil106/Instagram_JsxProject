@@ -11,6 +11,7 @@ import {
   addOrUpdateComment,
   getPost,
   removeComment,
+  useSelectorProfileState,
 } from "../../redux/slices/ProfileSlice";
 import { CiHeart } from "react-icons/ci";
 import prof1 from "../../assets/Profile/1.png";
@@ -32,6 +33,8 @@ const CommentsModal = ({ handleClose, postId }) => {
   const [postData, setPostdata] = useState([]);
   const [comment, setComment] = useState("");
   const [postComments, setPostComments] = useState([]);
+  const { profilePictureBase64, profilePictureFiletype } =
+    useSelectorProfileState();
 
   useEffect(() => {
     const fetchPostData = async () => {
@@ -50,14 +53,26 @@ const CommentsModal = ({ handleClose, postId }) => {
 
   const handleCommentSubmit = async () => {
     const res = await dispatch(
-      addOrUpdateComment({ postId: postId, comment: comment })
+      addOrUpdateComment({
+        postId: postId,
+        comment: comment,
+      })
     );
+
     if (res.payload.isSuccess) {
-      const res1 = await dispatch(getPost(postId));
-      if (res1.payload.isSuccess) {
-        setPostdata(res1.payload.data);
-        setPostComments(res1.payload.data.postComments);
-      }
+      setPostComments((prev) => {
+        const newData = res.payload.data;
+
+        newData.profilePictureBase64 = profilePictureBase64;
+        newData.profilePictureFiletype = profilePictureFiletype;
+        newData.username = postData.username;
+        return [...prev, newData];
+      });
+      // const res1 = await dispatch(getPost(postId));
+      // if (res1.payload.isSuccess) {
+      //   setPostdata(res1.payload.data);
+      //   setPostComments(res1.payload.data.postComments);
+      // }
     }
 
     setComment("");
@@ -66,19 +81,22 @@ const CommentsModal = ({ handleClose, postId }) => {
   const deleteComment = async (commentId) => {
     const res = await dispatch(removeComment(commentId));
     if (res.payload.isSuccess) {
-      const res1 = await dispatch(getPost(postId));
-      if (res1.payload.isSuccess) {
-        setPostdata(res1.payload.data);
-        setPostComments(res1.payload.data.postComments);
-      }
+      setPostComments((prevData) => {
+        return prevData.filter((userData) => userData.commentId !== commentId);
+      });
+      // const res1 = await dispatch(getPost(postId));
+      // if (res1.payload.isSuccess) {
+      //   setPostdata(res1.payload.data);
+      //   setPostComments(res1.payload.data.postComments);
+      // }
     }
   };
   return (
     <Modal
       open={true}
       onClose={handleClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
+      aria-labelledby="child2-modal-title"
+      aria-describedby="child2-modal-description"
     >
       <Box sx={style}>
         <div className="header flex justify-between py-3 px-3 border-b-2">

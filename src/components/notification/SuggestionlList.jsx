@@ -13,7 +13,7 @@ const SuggestionlList = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const fethSuggestionList = async () => {
+  const fetchSuggestionList = async () => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const res = await dispatch(
@@ -33,7 +33,7 @@ const SuggestionlList = () => {
   };
 
   useEffect(() => {
-    fethSuggestionList();
+    fetchSuggestionList();
   }, []);
 
   //   useEffect(() => {
@@ -49,7 +49,7 @@ const SuggestionlList = () => {
     >
       <InfiniteScroll
         dataLength={suggestionList.length}
-        next={fethSuggestionList}
+        next={fetchSuggestionList}
         hasMore={hasMore}
         loader={
           <div className="flex justify-center">

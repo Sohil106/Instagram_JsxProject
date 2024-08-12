@@ -36,6 +36,7 @@ const FollowerFollowingModal = ({
   const [users, setUsers] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
+  const [searchValue, setSearchValue] = useState("");
 
   // const { followerList, followingList, mutualList } = useSelectorProfileState();
 
@@ -44,15 +45,30 @@ const FollowerFollowingModal = ({
     let response;
     if (header == "Followers") {
       response = await dispatch(
-        getFollowerList({ userId: userId, PageNumber: page, PageSize: 5 })
+        getFollowerList({
+          SearchValue: searchValue,
+          userId: userId,
+          PageNumber: page,
+          PageSize: 5,
+        })
       );
     } else if (header == "Following") {
       response = await dispatch(
-        getFollowingList({ userId: userId, PageNumber: page, PageSize: 5 })
+        getFollowingList({
+          SearchValue: searchValue,
+          userId: userId,
+          PageNumber: page,
+          PageSize: 5,
+        })
       );
     } else if (header == "Mutual") {
       response = await dispatch(
-        getMutualList({ userId: userId, PageNumber: page, PageSize: 5 })
+        getMutualList({
+          SearchValue: searchValue,
+          userId: userId,
+          PageNumber: page,
+          PageSize: 5,
+        })
       );
     }
 
@@ -70,34 +86,45 @@ const FollowerFollowingModal = ({
       } else {
         setHasMore(false); // No more data to load
       }
+      if (requiredPage == pageNumber) {
+        setHasMore(false);
+      }
     }
   };
 
   useEffect(() => {
     fetchList();
-  }, [header]);
-
-  const handleSubmit = (e) => {
-    let value = "";
-    value = e.target.value;
-    if (value.length > 0) {
-      if (header == "Followers") {
-        dispatch(getFollowerList({ userId: userId, SearchValue: value }));
-      } else if (header == "Following") {
-        dispatch(getFollowingList({ userId: userId, SearchValue: value }));
-      } else if (header == "Mutual") {
-        dispatch(getMutualList({ userId: userId, SearchValue: value }));
-      }
-    } else {
-      if (header == "Followers") {
-        dispatch(getFollowerList({ userId: userId }));
-      } else if (header == "Following") {
-        dispatch(getFollowingList({ userId: userId }));
-      } else if (header == "Mutual") {
-        dispatch(getMutualList({ userId: userId }));
-      }
-    }
+  }, [header, searchValue]);
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchValue(e.target.value);
+    setPage(1);
+    setUsers([]);
+    setHasMore(true);
+    // fetchUsers(1, value);
   };
+
+  // const handleSubmit = (e) => {
+  //   let value = "";
+  //   value = e.target.value;
+  //   if (value.length > 0) {
+  //     if (header == "Followers") {
+  //       dispatch(getFollowerList({ userId: userId, SearchValue: value }));
+  //     } else if (header == "Following") {
+  //       dispatch(getFollowingList({ userId: userId, SearchValue: value }));
+  //     } else if (header == "Mutual") {
+  //       dispatch(getMutualList({ userId: userId, SearchValue: value }));
+  //     }
+  //   } else {
+  //     if (header == "Followers") {
+  //       dispatch(getFollowerList({ userId: userId }));
+  //     } else if (header == "Following") {
+  //       dispatch(getFollowingList({ userId: userId }));
+  //     } else if (header == "Mutual") {
+  //       dispatch(getMutualList({ userId: userId }));
+  //     }
+  //   }
+  // };
 
   return (
     <div>
@@ -118,7 +145,7 @@ const FollowerFollowingModal = ({
                 type="text"
                 className="bg-gray-100 border text-gray-900 text-sm rounded-lg  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Search"
-                onKeyUp={handleSubmit}
+                onKeyUp={handleSearchChange}
               />
             </div>
           </div>

@@ -7,25 +7,19 @@ import { button } from "@material-tailwind/react";
 import { useDispatch } from "react-redux";
 import { removeComment } from "../../redux/slices/ProfileSlice";
 
-const CommentList = ({eachcomment,deleteComment}) => {
+const CommentList = ({ eachcomment, deleteComment }) => {
   const token = decodeToken();
-  const [userId , setUserId] = useState(null)
+  const [userId, setUserId] = useState(null);
   useEffect(() => {
-    setUserId(token.UserId)
-  },[])
-
- 
-
+    setUserId(token.UserId);
+  }, []);
   return (
-    <div
-      className="flex justify-between items-center"
-      
-    >
+    <div className="flex justify-between items-center">
       <div className="flex gap-4 items-center">
         <div className="flex items-center min-w-fit">
           <Avatar
             src={`data:image/${
-                eachcomment.profilePictureFiletype || "jpeg"
+              eachcomment.profilePictureFiletype || "jpeg"
             };base64,${eachcomment.profilePictureBase64 || ""}`}
           />
         </div>
@@ -41,10 +35,15 @@ const CommentList = ({eachcomment,deleteComment}) => {
           </div>
         </div>
       </div>
-      {eachcomment.userId == userId ? <button onClick={() => deleteComment(eachcomment.commentId)}><MdDelete className="text-2xl" /></button> :  <div>
-        <CiHeart className="text-2xl" />
-      </div> }
-     
+      {eachcomment.userId == userId ? (
+        <button onClick={() => deleteComment(eachcomment.commentId)}>
+          <MdDelete className="text-2xl" />
+        </button>
+      ) : (
+        <div>
+          <CiHeart className="text-2xl" />
+        </div>
+      )}
     </div>
   );
 };

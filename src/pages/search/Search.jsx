@@ -26,7 +26,7 @@ const Search = () => {
 
   const fetchUsers = async (pageNumber, searchValue) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
       const response = await dispatch(
         getUserList({
@@ -48,6 +48,10 @@ const Search = () => {
           setPage(pageNumber + 1);
         } else {
           setHasMore(false); // No more data to load
+        }
+
+        if (requiredPage == pageNumber) {
+          setHasMore(false);
         }
       }
     } catch (error) {

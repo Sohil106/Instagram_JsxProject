@@ -1,8 +1,8 @@
-import * as React from 'react';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import { useController } from 'react-hook-form';
+import * as React from "react";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import { useController } from "react-hook-form";
 
 const CustomSwitch = ({ name, control, defaultValue }) => {
   const {
@@ -18,6 +18,7 @@ const CustomSwitch = ({ name, control, defaultValue }) => {
       <FormControlLabel
         control={
           <Switch
+            sx={{ color: "red" }}
             checked={value}
             onChange={onChange}
             onBlur={onBlur}

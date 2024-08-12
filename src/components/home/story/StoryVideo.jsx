@@ -16,7 +16,7 @@ const StoryVideo = ({ fileType, base64, closeEye }) => {
           // controls
           className={`${
             closeEye ? "w-[400px]" : "w-full"
-          } object-cover p-0.5 aspect-video border-2 border-gray-600 rounded-xl`}
+          } object-contain h-[400px] p-0.5 aspect-video border-2 border-gray-600 rounded-xl`}
         >
           <source
             src={`data:image/${fileType};base64,${base64}`}

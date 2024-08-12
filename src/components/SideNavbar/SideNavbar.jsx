@@ -24,6 +24,8 @@ import { AllRoutes } from "../../constants/Routes";
 import { useDispatch } from "react-redux";
 import {
   getProfilePicture,
+  getProfilePictureBase64,
+  getUnseenNotificationList,
   getUserData,
   useSelectorProfileState,
 } from "../../redux/slices/ProfileSlice";
@@ -33,20 +35,27 @@ import profiledemo from "../../assets/images/profiledemo.jpg";
 import SideNotificationBar from "./SideNotificationBar";
 import { Avatar, Button } from "@mui/material";
 import { useLocation } from "react-router-dom";
+import signalRService from "../../constants/signalRService";
 
 export const SideNavbar = ({
   toggleSidebar,
   toggleSearchBar,
   handleAddPostModel,
 }) => {
-  const { profilePicture, success } = useSelectorProfileState();
+  const {
+    profilePictureBase64,
+    profilePictureFiletype,
+    profilePicture,
+    success,
+    UnseenNotificationCount,
+  } = useSelectorProfileState();
   const navigate = useNavigate();
   const disPatch = useDispatch();
   const userData = decodeToken();
   const location = useLocation();
   const { pathname } = location;
-
   const [isActive, setIsActive] = useState(1);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   const LogoutHandler = () => {
     disPatch(logout());
@@ -85,8 +94,24 @@ export const SideNavbar = ({
   }, [pathname]);
 
   useEffect(() => {
+    const res0 = disPatch(getProfilePictureBase64(userData.UserId));
     const res = disPatch(getProfilePicture(userData.UserId));
     const res1 = disPatch(getUserData(userData.UserId));
+    const res2 = disPatch(getUnseenNotificationList());
+  }, []);
+  useEffect(() => {
+    setNotificationCount(UnseenNotificationCount);
+  }, [UnseenNotificationCount]);
+
+  useEffect(() => {
+    signalRService.on("ReceiveNotification", (responseDTO) => {
+      console.log(responseDTO);
+      if (responseDTO.isDeleted) {
+        setNotificationCount(notificationCount);
+      } else {
+        setNotificationCount(notificationCount + 1);
+      }
+    });
   }, []);
 
   return (
@@ -131,25 +156,39 @@ export const SideNavbar = ({
         >
           {isActive == 5 ? <PiMessengerLogoFill /> : <PiMessengerLogoBold />}
         </button>
-        <button
-          className={`sidenav_button mb-3 ${isActive == 6 ? "active" : ""}`}
-          // to={AllRoutes.Notifications}
-          // className={`sidenav_button mb-3 ${
-          //   activeLink === AllRoutes.Notifications ? "active" : ""
-          // }`}
-          onClick={() => {
-            setIsActive(6);
-            toggleSidebar();
-          }}
+        <div
+          className={`relative sidenav_button mb-3 ${
+            isActive == 6 ? "active" : ""
+          }`}
         >
-          {isActive == 6 ? <FaHeart /> : <FaRegHeart />}
-        </button>
-        <div className={`paste-button ${isActive == 7 ? "active" : ""}`}>
+          <button
+            // to={AllRoutes.Notifications}
+            // className={`sidenav_button mb-3 ${
+            //   activeLink === AllRoutes.Notifications ? "active" : ""
+            // }`}
+            onClick={() => {
+              setIsActive(6);
+              toggleSidebar();
+              setNotificationCount(0);
+            }}
+          >
+            {isActive == 6 ? <FaHeart /> : <FaRegHeart />}
+          </button>
+          {notificationCount > 0 && (
+            <div className="absolute top-0 right-6 text-sm text-red-500">
+              {notificationCount}
+            </div>
+          )}
+        </div>
+
+        <div
+          className={`sidenav_button mb-3 paste-button ${
+            isActive == 7 ? "active" : ""
+          }`}
+        >
           <div className="flex justify-center">
             <button
-              className={`sidenav_button mb-3   ${
-                isActive == 7 ? "active" : ""
-              }`}
+              className={`  ${isActive == 7 ? "active" : ""}`}
               onClick={() => {
                 setIsActive(7);
               }}
@@ -198,7 +237,8 @@ export const SideNavbar = ({
           onClick={() => handleNavigation(AllRoutes.Profile, 8)}
         >
           <Avatar
-            src={profilePicture ? profilePicture : profiledemo}
+            // src={profilePicture ? profilePicture : profiledemo}
+            src={`data:image/${profilePictureFiletype};base64,${profilePictureBase64}`}
             alt="profile"
             className="w-6 h-6 "
           />

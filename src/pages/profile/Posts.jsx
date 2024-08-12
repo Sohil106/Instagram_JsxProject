@@ -62,6 +62,12 @@ const Posts = ({ userId }) => {
     setOpen(false);
   };
 
+  const deletehandler = (postId) => {
+    setPostList((prevPostData) => {
+      return prevPostData.filter((postData) => postData.postId !== postId);
+    });
+  };
+
   return (
     // style={{ height: "calc(100vh - 100px)", overflowY: "auto" }}
     <div>
@@ -128,7 +134,12 @@ const Posts = ({ userId }) => {
               </div>
             ))}
           {open && (
-            <MyPostsModel handleClose={handleClose} open={open} post={data} />
+            <MyPostsModel
+              handleClose={handleClose}
+              open={open}
+              post={data}
+              deletehandler={deletehandler}
+            />
           )}
         </div>
       </InfiniteScroll>

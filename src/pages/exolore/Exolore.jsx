@@ -69,7 +69,7 @@ const Exolore = () => {
 
   const fetchData = async () => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
       const res = await dispatch(
         getHomePagePostList({ PageNumber: pageNumber, PageSize: 6 })
@@ -78,13 +78,12 @@ const Exolore = () => {
         const requiredPage = res.payload.data.requiredPage;
         if (requiredPage >= pageNumber) {
           const newPostData = res.payload.data.data;
-          if (pageNumber === 1) {
-            setPostList(newPostData);
-          } else {
-            setPostList((prevPostData) => [...prevPostData, ...newPostData]);
-          }
+          setPostList((prevPostData) => [...prevPostData, ...newPostData]);
           setPageNumber(pageNumber + 1);
         } else {
+          setHasMore(false);
+        }
+        if (requiredPage == pageNumber) {
           setHasMore(false);
         }
       }
@@ -113,7 +112,7 @@ const Exolore = () => {
         next={fetchData}
         hasMore={hasMore}
         loader={
-          <div className="h-[150px] w-full flex justify-center">
+          <div className="h-[200px] w-full flex justify-center">
             <RotatingLines
               visible={true}
               className

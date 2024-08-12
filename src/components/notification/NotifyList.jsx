@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { RotatingLines } from "react-loader-spinner";
 import { Avatar } from "@mui/material";
+import signalRService from "../../constants/signalRService";
 
 const NotifyList = () => {
   const dispatch = useDispatch();
@@ -34,6 +35,25 @@ const NotifyList = () => {
   useEffect(() => {
     fetchNotifyList();
   }, []);
+
+  useEffect(() => {
+    const fetchMoreNotification = (newUserData) => {
+      setNotifyList((prevUserData) => {
+        // const existingUserData = prevUserData.find(
+        //   (userData) => userData.notificationId === newUserData.notificationId
+        // );
+        if (newUserData.isDeleted) {
+          return prevUserData.filter(
+            (userData) => userData.notificationId !== newUserData.notificationId
+          );
+        } else {
+          return [...prevUserData, newUserData];
+        }
+      });
+    };
+    signalRService.on("ReceiveNotification", fetchMoreNotification);
+  }, []);
+
   return (
     <InfiniteScroll
       dataLength={notifyList.length}
@@ -79,15 +99,28 @@ const NotifyList = () => {
               <div>
                 <p>
                   <span className="font-semibold">{user.username} </span>
-                  <span className="">{user.message}</span>
+                  <span className="">
+                    {user.message} {user.comment}
+                  </span>
                 </p>
                 <p className="text-gray-400"></p>
               </div>
             </div>
             <div className="flex items-center">
-              <button className="bg-zinc-100 rounded-md font-semibold px-3 py-1 mt-4md:mt-0">
-                Following
-              </button>
+              {(user.notificationType === 1 ||
+                user.notificationType === 2 ||
+                user.notificationType === 4) && (
+                <img
+                  src={`data:image/${user.imageFileType};base64,${user.image}`}
+                  className="h-8 w-8 min-h-8 min-w-8 me-3 rounded"
+                  alt="likedPost"
+                />
+              )}
+              {user.notificationType === 6 && (
+                <button className="bg-zinc-100 rounded-md font-semibold px-3 py-1 mt-4md:mt-0">
+                  Following
+                </button>
+              )}
             </div>
           </div>
         ))}

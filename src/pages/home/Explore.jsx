@@ -21,7 +21,7 @@ const Explore = () => {
 
   const fetchData = async () => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
       const res = await dispatch(
         getHomePagePostList({ PageNumber: pageNumber, PageSize: 5 })
@@ -37,6 +37,10 @@ const Explore = () => {
           }
           setPageNumber(pageNumber + 1);
         } else {
+          setHasMore(false);
+        }
+
+        if (requiredPage == pageNumber) {
           setHasMore(false);
         }
       }
